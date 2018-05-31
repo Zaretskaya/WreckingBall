@@ -160,7 +160,7 @@ public class Wr extends JPanel implements KeyListener,
 
             if (Ball.x <= 0 || Ball.x + Ball.height >= 343) {
                 movex = -movex;
-            }// if ends here
+            }
             if (Ball.y <= 0) {
                 movey = -movey;
             }
