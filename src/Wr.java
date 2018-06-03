@@ -1,3 +1,5 @@
+import javafx.scene.control.Alert;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -15,40 +17,40 @@ public class Wr extends JPanel implements KeyListener,
     static boolean right = false;
     static boolean left = false;
 
-    int ballx = 160;
-    int bally = 218;
+    int posXGlobe = 160;
+    int posYGlobe = 218;
 
-    int batx = 160;
-    int baty = 245;
+    int posXPlat = 160;
+    int posYPlat = 245;
 
-    int brickx = 70;
-    int bricky = 50;
+    int BlockX = 70;
+    int BlockY = 50;
 
-    int brickBreadth = 30;
-    int brickHeight = 20;
+    int BlockWidth = 30;
+    int BlockHeight = 20;
 
     private static int points = 0;
 
-    Rectangle Ball = new Rectangle(ballx, bally, 10, 10);
-    Rectangle Bat = new Rectangle(batx, baty, 40, 5);
-    Rectangle[] Brick = new Rectangle[12];
+    Rectangle globe = new Rectangle(posXGlobe, posYGlobe, 10, 10);
+    Rectangle plat = new Rectangle(posXPlat, posYPlat, 40, 5);
+    Block[] blocks = new Block[20];
 
 
-    int movex = -1;
-    int movey = -1;
-    boolean ballFallDown = false;
-    boolean bricksOver = false;
+    int courseX = -1;
+    int courseY = -1;
+    boolean fallingDown = false;
+    boolean blocksOver = false;
     int count = 0;
-    String status;
-    private static String HeroName;
+    String text;
+    private static String heroName;
 
 
 
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         Wr game = new Wr();
-        JButton button = new JButton("restart");
-        frame.setSize(350, 450);
+        JButton button = new JButton("RESTART");
+        frame.setSize(350, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         frame.add(game);
@@ -61,20 +63,20 @@ public class Wr extends JPanel implements KeyListener,
         game.addKeyListener(game);
         game.setFocusable(true);
         Thread t = new Thread(game);
+
+        heroName = JOptionPane.showInputDialog(null, "Please enter your name:",
+                "Wrecking Ball", JOptionPane.QUESTION_MESSAGE);
+        if (heroName == null) {
+            System.exit(0);
+        }
+        if (heroName.toUpperCase().equals("LZ") || heroName.toUpperCase().equals("LizaZaretskaya")
+                || heroName.toUpperCase().equals("Liza") || heroName.toUpperCase().equals("PM")) {
+            points += 50;
+            JOptionPane.showMessageDialog(null, "You got secret 50 points",
+                    "50 Points", JOptionPane.INFORMATION_MESSAGE);
+
+        }
         t.start();
-
-            HeroName = JOptionPane.showInputDialog(null, "Please enter your name:",
-                    "Wrecking ball", JOptionPane.QUESTION_MESSAGE);
-            if (HeroName == null) {
-                System.exit(0);
-            }
-            if (HeroName.toUpperCase().equals("LZ") || HeroName.toUpperCase().equals("LizaZaretskaya")
-                    || HeroName.toUpperCase().equals("Liza")) {
-                points += 100;
-                JOptionPane.showMessageDialog(null, "You got secret 100 points",
-                        "100 Points", JOptionPane.INFORMATION_MESSAGE);
-
-    }
     }
 
 
@@ -83,29 +85,29 @@ public class Wr extends JPanel implements KeyListener,
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, 350, 450);
         g.setColor(Color.white);
-        g.setFont(new Font("arial",Font.BOLD,15));
-        g.drawString("Points: "+points,250,20);
+        g.setFont(new Font("Times New Roman",Font.BOLD,15));
+        g.drawString("Points: "+points,260,20);
         g.setColor(Color.blue);
-        g.fillOval(Ball.x, Ball.y, Ball.width, Ball.height);
+        g.fillOval(globe.x, globe.y, globe.width, globe.height);
         g.setColor(Color.black);
-        g.fill3DRect(Bat.x, Bat.y, Bat.width, Bat.height, true);
+        g.fill3DRect(plat.x, plat.y, plat.width, plat.height, true);
         g.setColor(Color.GRAY);
         g.fillRect(0, 251, 450, 200);
         g.setColor(Color.black);
         g.drawRect(0, 0, 343, 250);
-        for (int i = 0; i < Brick.length; i++) {
-            if (Brick[i] != null) {
-                g.fill3DRect(Brick[i].x, Brick[i].y, Brick[i].width,
-                        Brick[i].height, true);
+        for (int i = 0; i < blocks.length; i++) {
+            if (blocks[i] != null) {
+                g.fill3DRect(blocks[i].getBlockX(), blocks[i].getBlockY(), blocks[i].getBlockWidth(),
+                        blocks[i].getBlockHeight(), true);
             }
         }
 
-        if (ballFallDown == true || bricksOver == true) {
-            Font f = new Font("Arial", Font.BOLD, 15);
-            g.setFont(f);
-            g.drawString(status, 35, 150);
-            ballFallDown = false;
-            bricksOver = false;
+        if (fallingDown || blocksOver) {
+            Font font = new Font("Times New Roman", Font.BOLD, 15);
+            g.setFont(font);
+            g.drawString(text, 40, 200);
+            fallingDown = false;
+            blocksOver = false;
         }
 
     }
@@ -113,65 +115,71 @@ public class Wr extends JPanel implements KeyListener,
 
     public void run() {
 
-        createBricks();
+        createBlocks();
 
-
-            while (true) {
-            for (int i = 0; i < Brick.length; i++) {
-                if (Brick[i] != null) {
-                    if (Brick[i].intersects(Ball)) {
-                        Brick[i] = null;
-                        movey = -movey;
+        while (true) {
+            for (int i = 0; i < blocks.length; i++) {
+                if (blocks[i] != null) {
+                    if (blocks[i].intersects(globe)) {
+                        blocks[i] = null;
+                        courseY = -courseY;
                         points += 25;
                         count++;
                     }
                 }
             }
 
-            if (count == Brick.length) {
-                bricksOver = true;
-                status = "YOU WON THE GAME! POINTS:"+points;
+            if (count == blocks.length) {
+                blocksOver = true;
+                /*Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("Winner");
+                alert.setTitle("YOU WON THE GAME! POINTS: "+points);
+                alert.showAndWait();
+
+
+                System.exit(1);*/
+                text = "YOU WON THE GAME! POINTS:"+points;
                 repaint();
                 break;
             }
 
             repaint();
-            Ball.x += movex;
-            Ball.y += movey;
+            globe.x += courseX;
+            globe.y += courseY;
 
             if (left == true) {
 
-                Bat.x -= 3;
+                plat.x -= 3;
                 right = false;
             }
             if (right == true) {
-                Bat.x += 3;
+                plat.x += 3;
                 left = false;
             }
-            if (Bat.x <= 4) {
-                Bat.x = 4;
-            } else if (Bat.x >= 298) {
-                Bat.x = 298;
+            if (plat.x <= 4) {
+                plat.x = 4;
+            } else if (plat.x >= 298) {
+                plat.x = 298;
             }
 
-            if (Ball.intersects(Bat)) {
-                movey = -movey;
+            if (globe.intersects(plat)) {
+                courseY = -courseY;
             }
 
-            if (Ball.x <= 0 || Ball.x + Ball.height >= 343) {
-                movex = -movex;
+            if (globe.x <= 0 || globe.x + globe.height >= 343) {
+                courseX = -courseX;
             }
-            if (Ball.y <= 0) {
-                movey = -movey;
+            if (globe.y <= 0) {
+                courseY = -courseY;
             }
-            if (Ball.y >= 250) {
-                ballFallDown = true;
-                status = "YOU LOST THE GAME! POINTS: "+points;
+            if (globe.y >= 250) {
+                fallingDown = true;
+                text = "YOU LOST THE GAME! POINTS: "+points;
                 repaint();
 
             }
             try {
-                Thread.sleep(10);
+                Thread.sleep(7);
             } catch (Exception ex) {
             }
         }
@@ -210,58 +218,62 @@ public class Wr extends JPanel implements KeyListener,
     @Override
     public void actionPerformed(ActionEvent e) {
         String str = e.getActionCommand();
-        if (str.equals("restart")) {
+        if (str.equals("RESTART")) {
             this.restart();
-
         }
     }
 
     public void restart() {
-
         requestFocus(true);
         initializeVariables();
-        createBricks();
+        createBlocks();
         repaint();
+        points = 0;
     }
 
     public void initializeVariables(){
 
-        ballx = 160;
-        bally = 218;
+        posXGlobe = 160;
+        posYGlobe = 218;
 
-        batx = 160;
-        baty = 245;
+        posXPlat = 160;
+        posYPlat = 245;
 
-        brickx = 70;
-        bricky = 50;
-        Ball = new Rectangle(ballx, bally, 5, 5);
-        Bat = new Rectangle(batx, baty, 40, 5);
+        BlockX = 70;
+        BlockY = 50;
+        globe = new Rectangle(posXGlobe, posYGlobe, 10, 10);
+        plat = new Rectangle(posXPlat, posYPlat, 40, 5);
 
-        Brick = new Rectangle[12];
+        blocks = new Block[20];
 
-        movex = -1;
-        movey = -1;
-        ballFallDown = false;
-        bricksOver = false;
+        courseX = -1;
+        courseY = -1;
+        fallingDown = false;
+        blocksOver = false;
         count = 0;
-        status = null;
-
+        text = null;
 
     }
-    public void createBricks(){
-        for (int i = 0; i < Brick.length; i++) {
-            Brick[i] = new Rectangle(brickx, bricky, brickBreadth, brickHeight);
+
+    public void createBlocks() {
+        for (int i = 0; i < blocks.length; i++) {
             if (i == 5) {
-                brickx = 70;
-                bricky = (bricky + brickHeight + 2);
+                BlockX = 80;
+                BlockY = (BlockY + BlockHeight + 3);
 
             }
             if (i == 9) {
-                brickx = 100;
-                bricky = (bricky + brickHeight + 2);
+                BlockX = 100;
+                BlockY = (BlockY + BlockHeight + 3);
 
             }
-            brickx += (brickBreadth+1);
+            if (i == 12) {
+                BlockX = 25;
+                BlockY = (BlockY + BlockHeight + 3);
+
+            }
+            blocks[i] = new Block(BlockX, BlockY, BlockWidth, BlockHeight);
+            BlockX += (BlockWidth + 3);
         }
     }
 
