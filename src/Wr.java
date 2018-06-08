@@ -31,8 +31,8 @@ public class Wr extends JPanel implements KeyListener,
 
     private static int points = 0;
 
-    Rectangle globe = new Rectangle(posXGlobe, posYGlobe, 10, 10);
-    Rectangle plat = new Rectangle(posXPlat, posYPlat, 40, 5);
+    Globe globe = new Globe(posXGlobe, posYGlobe, 10, 10);
+    Plat plat = new Plat(160, 245, 40, 5);
     Block[] blocks = new Block[20];
 
 
@@ -50,7 +50,7 @@ public class Wr extends JPanel implements KeyListener,
         JFrame frame = new JFrame();
         Wr game = new Wr();
         JButton button = new JButton("RESTART");
-        frame.setSize(350, 300);
+        frame.setSize(350, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         frame.add(game);
@@ -69,8 +69,8 @@ public class Wr extends JPanel implements KeyListener,
         if (heroName == null) {
             System.exit(0);
         }
-        if (heroName.toUpperCase().equals("LZ") || heroName.toUpperCase().equals("LizaZaretskaya")
-                || heroName.toUpperCase().equals("Liza") || heroName.toUpperCase().equals("PM")) {
+        if (heroName.toUpperCase().equals("LZ") || heroName.equals("LizaZaretskaya")
+                || heroName.equals("Liza") || heroName.toUpperCase().equals("PM")) {
             points += 50;
             JOptionPane.showMessageDialog(null, "You got secret 50 points",
                     "50 Points", JOptionPane.INFORMATION_MESSAGE);
@@ -131,13 +131,13 @@ public class Wr extends JPanel implements KeyListener,
 
             if (count == blocks.length) {
                 blocksOver = true;
-                /*Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                /*
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setHeaderText("Winner");
                 alert.setTitle("YOU WON THE GAME! POINTS: "+points);
                 alert.showAndWait();
-
-
-                System.exit(1);*/
+                System.exit(1);
+                */
                 text = "YOU WON THE GAME! POINTS:"+points;
                 repaint();
                 break;
@@ -148,12 +148,11 @@ public class Wr extends JPanel implements KeyListener,
             globe.y += courseY;
 
             if (left == true) {
-
-                plat.x -= 3;
+                plat.x-=3;
                 right = false;
             }
             if (right == true) {
-                plat.x += 3;
+                plat.x+=3;
                 left = false;
             }
             if (plat.x <= 4) {
@@ -162,7 +161,7 @@ public class Wr extends JPanel implements KeyListener,
                 plat.x = 298;
             }
 
-            if (globe.intersects(plat)) {
+            if (plat.intersects(globe)) {
                 courseY = -courseY;
             }
 
@@ -241,8 +240,8 @@ public class Wr extends JPanel implements KeyListener,
 
         BlockX = 70;
         BlockY = 50;
-        globe = new Rectangle(posXGlobe, posYGlobe, 10, 10);
-        plat = new Rectangle(posXPlat, posYPlat, 40, 5);
+        globe = new Globe(posXGlobe, posYGlobe, 10, 10);
+        plat = new Plat(posXPlat, posYPlat, 40, 5);
 
         blocks = new Block[20];
 

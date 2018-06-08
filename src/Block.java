@@ -71,4 +71,32 @@ public class Block extends Rectangle {
                 (th < ty || th > ry));
     }
 
+
+
+
+
+    public boolean intersects(Globe r) {
+        int tw = this.BlockWidth;
+        int th = this.BlockHeight;
+        int rw = r.width;
+        int rh = r.height;
+        if (rw <= 0 || rh <= 0 || tw <= 0 || th <= 0) {
+            return false;
+        }
+        int tx = this.BlockX;
+        int ty = this.BlockY;
+        int rx = r.x;
+        int ry = r.y;
+        rw += rx;
+        rh += ry;
+        tw += tx;
+        th += ty;
+        //      overflow || intersect
+        return ((rw < rx || rw > tx) &&
+                (rh < ry || rh > ty) &&
+                (tw < tx || tw > rx) &&
+                (th < ty || th > ry));
+    }
+
+
 }
