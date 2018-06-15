@@ -35,12 +35,10 @@ public class Wr extends JPanel implements KeyListener,
     int count = 0;
     static String text;
 
-    public static class Main {
+    private static String heroName;
+    static int points = 0;
 
-        private static String heroName;
-        static int points = 0;
-
-        public static void main(String[] args) {
+    public static void main(String[] args) {
             JFrame frame = new JFrame();
             Wr game = new Wr();
             JButton button = new JButton("RESTART");
@@ -74,7 +72,7 @@ public class Wr extends JPanel implements KeyListener,
 
             t.start();
         }
-    }
+
 
 
     public void paint(Graphics g) {
@@ -83,7 +81,7 @@ public class Wr extends JPanel implements KeyListener,
         g.fillRect(0, 0, 350, 450);
         g.setColor(Color.white);
         g.setFont(new Font("Times New Roman", Font.BOLD, 15));
-        g.drawString("Points: " + Main.points, 260, 20);
+        g.drawString("Points: " + points, 260, 20);
         g.setColor(Color.blue);
         g.fillOval(globe.x, globe.y, globe.width, globe.height);
         g.setColor(Color.black);
@@ -120,7 +118,7 @@ public class Wr extends JPanel implements KeyListener,
                     if (blocks[i].intersects(globe)) {
                         blocks[i] = null;
                         courseY = -courseY;
-                        Main.points += 25;
+                        points += 25;
                         count++;
                     }
                 }
@@ -128,7 +126,7 @@ public class Wr extends JPanel implements KeyListener,
 
             if (count == blocks.length) {
                 blocksOver = true;
-                text = "YOU WON THE GAME! POINTS: " + Main.points;
+                text = "YOU WON THE GAME! POINTS: " + points;
                 repaint();
 
                 courseY = 0;
@@ -163,7 +161,7 @@ public class Wr extends JPanel implements KeyListener,
             }
             if (globe.y >= 250) {
                 fallingDown = true;
-                text = "YOU LOST THE GAME! POINTS: " + Main.points;
+                text = "YOU LOST THE GAME! POINTS: " + points;
                 repaint();
 
             }
@@ -217,7 +215,7 @@ public class Wr extends JPanel implements KeyListener,
         initializeVariables();
         createBlocks();
         repaint();
-        Main.points = 0;
+        points = 0;
 
     }
 
