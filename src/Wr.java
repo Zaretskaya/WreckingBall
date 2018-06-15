@@ -37,8 +37,6 @@ public class Wr extends JPanel implements KeyListener,
 
     public static class Main {
 
-        public static Painter painter = new Painter();
-
         private static String heroName;
         static int points = 0;
 
